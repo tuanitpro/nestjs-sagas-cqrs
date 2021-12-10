@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model addressField {
+  id                    Int     @id @default(autoincrement())
+  country               String  @db.VarChar(255)
+  state                 String  @db.VarChar(255)
+  city                  String  @db.VarChar(255)
+  postalCode            String  @db.VarChar(255)
+  street1               String  @db.VarChar(255)
+  street2               String? @db.VarChar(255)
+  building              String? @db.VarChar(255)
+  blockNumber           String? @db.VarChar(255)
+  unitNumber            String? @db.VarChar(255)
+  userBillingAddress    user?   @relation("user_BillingAddress")
+  userRegisteredAddress user?   @relation("user_RegisterAddress")
+}
+
+model contactField {
+  id                Int    @id @default(autoincrement())
+  firstName         String @db.VarChar(255)
+  middleName        String @db.VarChar(255)
+  lastName          String @db.VarChar(255)
+  email             String @db.VarChar(255)
+  phoneNumber       String @db.VarChar(255)
+  contactOffice     String @db.VarChar(255)
+  userBillingPerson user?  @relation("user_BillingPerson")
+  userContactPerson user?  @relation("user_ContactPerson")
+}
+
+model user {
+  id                  Int           @id @default(autoincrement())
+  firstName           String        @db.VarChar(255)
+  lastName            String        @db.VarChar(255)
+  email               String        @unique @db.VarChar(255)
+  phone               String        @unique @db.VarChar(255)
+  registeredAddressId Int?          @unique
+  billingAddressId    Int?          @unique
+  contactPersonId     Int?          @unique
+  billingPersonId     Int?          @unique
+  createdBy           String?       @db.VarChar(255)
+  createdDate         DateTime      @default(now()) @db.DateTime(6)
+  isDeleted           Boolean       @default(false)
+  updatedBy           String?       @db.VarChar(255)
+  updatedDate         DateTime?     @default(now()) @db.DateTime(6)
+  billingAddress      addressField? @relation("user_BillingAddress", fields: [billingAddressId], references: [id])
+  billingPerson       contactField? @relation("user_BillingPerson", fields: [billingPersonId], references: [id])
+  contactPerson       contactField? @relation("user_ContactPerson", fields: [contactPersonId], references: [id])
+  registeredAddress   addressField? @relation("user_RegisterAddress", fields: [registeredAddressId], references: [id])
+
+  @@index([id], map: "IDX_user")
+}

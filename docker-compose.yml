@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+    image: sagas_cqrs
+    container_name: sagas_cqrs
+    ports:
+      - "3002:3002"
+    command: npm run start:dev
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - ./:/usr/local/node-sagas-cqrs
+    networks:
+      - demo
+   
+  mysql:
+    image: mysql:${MYSQL_VERSION}
+    ports:      
+      - "${FORWARD_MYSQL_PORT:-3306}:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - "drive_mysql:/var/lib/mysql"
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    networks:
+      - demo
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+        - "${FORWARD_RABBITMQ_PORT:-5672}:5672"
+        - "${FORWARD_RABBITMQ_DASHBOARD_PORT:-15672}:15672"
+    volumes:
+        - drive_rabbitmq:/var/lib/rabbitmq/
+        - drive_rabbitmq:/var/log/rabbitmq
+    networks:
+        - demo
+
+networks:
+  demo:
+    driver: bridge
+
+volumes:
+  drive_mysql:
+    driver: local
+  drive_rabbitmq:
+    driver: local

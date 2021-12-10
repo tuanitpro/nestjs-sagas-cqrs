@@ -1,0 +1,23 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": "../",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "testTimeout": 60000,
+  "coverageDirectory": "../coverage",
+  "testEnvironment": "node",
+  "moduleNameMapper": {
+    "@config/(.*)$": "<rootDir>/src/config/$1",
+    "@database/(.*)$": "<rootDir>/src/database/$1",
+    "@interceptors/(.*)$": "<rootDir>/src/interceptors/$1",
+    "@modules/(.*)$": "<rootDir>/src/modules/$1",
+    "@queues/(.*)$": "<rootDir>/src/queues/$1",
+    "@services/(.*)$": "<rootDir>/src/services/$1"
+  }
+}
